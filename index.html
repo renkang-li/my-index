@@ -1,0 +1,264 @@
+<!DOCTYPE html>
+<html lang="zh">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>李仁康的码头时刻 | 个人主页</title>
+    <link href="https://fonts.googleapis.com/css2?family=DotGothic16&family=Noto+Sans+SC:wght@500;700&display=swap" rel="stylesheet">
+    <style>
+        body { margin: 0; overflow: hidden; background-color: #ffd166; font-family: 'Noto Sans SC', sans-serif; }
+        canvas { display: block; width: 100vw; height: 100vh; cursor: pointer; }
+        #ui-container { position: absolute; top: 0; left: 0; width: 100%; height: 100%; pointer-events: none; display: flex; flex-direction: column; justify-content: center; align-items: flex-start; padding: 6vw; box-sizing: border-box; }
+        .card {
+            background: rgba(255, 255, 255, 0.85);
+            backdrop-filter: blur(8px);
+            border: 3px solid #333;
+            border-radius: 8px;
+            padding: 30px;
+            max-width: 420px;
+            pointer-events: auto;
+            box-shadow: 8px 8px 0px #333;
+            transition: transform 0.2s;
+        }
+        .card:hover { transform: translate(-2px, -2px); box-shadow: 10px 10px 0px #333; }
+        h1 { font-family: 'DotGothic16', sans-serif; font-size: 28px; margin: 0 0 15px 0; color: #ef476f; }
+        h2 { font-size: 16px; color: #333; margin-top: 0; margin-bottom: 20px; }
+        ul { padding-left: 20px; color: #555; font-size: 14px; line-height: 1.8; margin-bottom: 25px; }
+        .quote { font-family: 'DotGothic16', sans-serif; color: #118ab2; font-weight: bold; margin-bottom: 20px; font-size: 16px;}
+        .links { display: flex; gap: 15px; }
+        .links a { text-decoration: none; color: #fff; background: #333; padding: 8px 16px; font-size: 14px; font-weight: bold; border-radius: 4px; transition: all 0.2s; }
+        .links a:hover { background: #ef476f; transform: translateY(-2px); }
+        #hint {
+            position: absolute;
+            bottom: 30px;
+            left: 50%;
+            transform: translateX(-50%);
+            font-family: 'DotGothic16', sans-serif;
+            color: #333;
+            background: rgba(255,255,255,0.9);
+            border: 2px solid #333;
+            padding: 8px 20px;
+            border-radius: 20px;
+            font-size: 15px;
+            font-weight: bold;
+            pointer-events: none;
+            box-shadow: 3px 3px 0 #333;
+            animation: bounce 2s infinite;
+        }
+        @keyframes bounce { 0%, 100% { transform: translate(-50%, 0); } 50% { transform: translate(-50%, -6px); } }
+    </style>
+</head>
+<body>
+
+    <div id="ui-container">
+        <div class="card">
+            <h1>> 李仁康 _</h1>
+            <h2>D2C 基础设施开发者 / 像素风爱好者</h2>
+            <div class="quote">“代码跑通了，去码头喝口热饮。”</div>
+            <ul>
+                <li>专注 D2C 电商平台架构与 Web 基础设施</li>
+                <li>主导 Sentry 监控、白屏噪点优化与 DSN 治理</li>
+                <li>熟练管理 34+ 核心项目模板及自动化 CI/CD</li>
+                <li>个人主页阵地：lrk.666.eu.org</li>
+            </ul>
+            <div class="links">
+                <a href="#github" target="_blank">GitHub</a>
+                <a href="#projects" target="_blank">项目模板库</a>
+            </div>
+        </div>
+    </div>
+
+    <div id="hint">☕️ 点击任意位置，喝口热饮</div>
+
+    <script type="module">
+        import * as THREE from 'https://unpkg.com/three@0.150.1/build/three.module.js';
+
+        const scene = new THREE.Scene();
+        scene.background = new THREE.Color(0xffd166);
+        scene.fog = new THREE.Fog(0xffd166, 10, 30);
+
+        // 【优化机位】移到角色的右前侧，完美看清侧脸和右手拿杯子的动作
+        const camera = new THREE.PerspectiveCamera(45, window.innerWidth / window.innerHeight, 0.1, 100);
+        const cameraBasePosition = { x: 5, y: 3.5, z: -1 };
+        camera.position.set(cameraBasePosition.x, cameraBasePosition.y, cameraBasePosition.z);
+
+        const renderer = new THREE.WebGLRenderer({ antialias: true });
+        renderer.setPixelRatio(Math.min(window.devicePixelRatio, 2));
+        renderer.setSize(window.innerWidth, window.innerHeight);
+        renderer.shadowMap.enabled = true;
+        renderer.shadowMap.type = THREE.PCFSoftShadowMap;
+        document.body.appendChild(renderer.domElement);
+
+        const ambientLight = new THREE.AmbientLight(0xffffff, 0.7);
+        scene.add(ambientLight);
+        const dirLight = new THREE.DirectionalLight(0xffeedd, 1.2);
+        dirLight.position.set(5, 10, 5);
+        dirLight.castShadow = true;
+        scene.add(dirLight);
+
+        // 材质
+        const matSea = new THREE.MeshStandardMaterial({ color: 0x118ab2, roughness: 0.1, metalness: 0.1 });
+        const matWood = new THREE.MeshStandardMaterial({ color: 0x8a5a44, roughness: 0.8 });
+        const matSkin = new THREE.MeshStandardMaterial({ color: 0xffcdb2 });
+        const matClothes = new THREE.MeshStandardMaterial({ color: 0x06d6a0 });
+        const matPants = new THREE.MeshStandardMaterial({ color: 0x073b4c });
+        const matCup = new THREE.MeshStandardMaterial({ color: 0xffffff }); // 白瓷杯更显热饮感
+        const matSteam = new THREE.MeshBasicMaterial({ color: 0xffffff, transparent: true, opacity: 0.6 });
+
+        // 环境：海与码头
+        const sea = new THREE.Mesh(new THREE.BoxGeometry(40, 4, 40), matSea);
+        sea.position.y = -2.5;
+        sea.receiveShadow = true;
+        scene.add(sea);
+
+        const deck = new THREE.Mesh(new THREE.BoxGeometry(8, 1, 15), matWood);
+        deck.position.set(0, -0.5, -2);
+        deck.receiveShadow = true;
+        deck.castShadow = true;
+        scene.add(deck);
+
+        // ==========================================
+        // 构建主角李仁康
+        // ==========================================
+        const character = new THREE.Group();
+
+        // 身体
+        const body = new THREE.Mesh(new THREE.BoxGeometry(1, 1.2, 0.6), matClothes);
+        body.position.set(0, 0.8, 0);
+        body.castShadow = true;
+        character.add(body);
+
+        // 头
+        const head = new THREE.Mesh(new THREE.BoxGeometry(0.8, 0.8, 0.8), matSkin);
+        head.position.set(0, 1.8, 0);
+        head.castShadow = true;
+        character.add(head);
+
+        // 腿
+        const legL = new THREE.Mesh(new THREE.BoxGeometry(0.4, 1.2, 0.4), matPants);
+        legL.position.set(0.25, -0.4, 0.3);
+        legL.castShadow = true;
+        const legR = new THREE.Mesh(new THREE.BoxGeometry(0.4, 1.2, 0.4), matPants);
+        legR.position.set(-0.25, -0.4, 0.3);
+        legR.castShadow = true;
+        character.add(legL, legR);
+
+        // 左手闲置
+        const armL = new THREE.Mesh(new THREE.BoxGeometry(0.3, 0.9, 0.3), matSkin);
+        armL.position.set(0.6, 0.9, 0); // 角色左侧
+        armL.castShadow = true;
+        character.add(armL);
+
+        // 【右手臂与杯子】用于喝水动画
+        const armGroup = new THREE.Group();
+        armGroup.position.set(-0.6, 1.3, 0); // 肩膀枢纽点(角色右侧)
+
+        const armR = new THREE.Mesh(new THREE.BoxGeometry(0.3, 0.9, 0.3), matSkin);
+        armR.position.set(0, -0.3, 0);
+        armR.castShadow = true;
+        armGroup.add(armR);
+
+        const cup = new THREE.Mesh(new THREE.BoxGeometry(0.35, 0.45, 0.35), matCup);
+        cup.position.set(0, -0.8, 0.2); // 拿在手里
+        cup.castShadow = true;
+        armGroup.add(cup);
+
+        // 【热气特效】
+        const steamParticles = [];
+        for(let i = 0; i < 3; i++) {
+            const steam = new THREE.Mesh(new THREE.BoxGeometry(0.1, 0.1, 0.1), matSteam);
+            steam.position.set(0, -0.5 + i * 0.2, 0.2);
+            steam.userData = { offset: i * 0.3 }; // 错开上升时间
+            armGroup.add(steam);
+            steamParticles.push(steam);
+        }
+
+        character.add(armGroup);
+
+        // 放置角色（坐在码头边缘，背对初始 Z 轴，面向海）
+        character.position.set(0, 0.5, -5);
+        character.rotation.y = Math.PI;
+        scene.add(character);
+
+        camera.lookAt(character.position.x, character.position.y + 1, character.position.z);
+
+        // ==========================================
+        // 动画控制系统 (丝滑版)
+        // ==========================================
+        let drinkState = { active: false, progress: 0 };
+
+        window.addEventListener('mousedown', () => {
+            if (!drinkState.active) {
+                drinkState.active = true;
+                drinkState.progress = 0;
+            }
+        });
+
+        // 鼠标视差
+        let mouseX = 0, mouseY = 0;
+        document.addEventListener('mousemove', (e) => {
+            mouseX = (e.clientX / window.innerWidth - 0.5) * 2;
+            mouseY = (e.clientY / window.innerHeight - 0.5) * 2;
+        });
+
+        const clock = new THREE.Clock();
+
+        function animate() {
+            requestAnimationFrame(animate);
+            const delta = clock.getDelta();
+            const time = clock.getElapsedTime();
+
+            // 1. 海面与双腿的休闲起伏
+            sea.position.y = -2.5 + Math.sin(time * 1.5) * 0.1;
+            legL.rotation.x = Math.sin(time * 2) * 0.1;
+            legR.rotation.x = Math.sin(time * 2 + Math.PI) * 0.1;
+
+            // 2. 热气上升动画
+            steamParticles.forEach(p => {
+                p.position.y += delta * 0.4;
+                p.position.x = Math.sin(time * 5 + p.userData.offset) * 0.05; // 左右微晃
+                p.material.opacity = 1 - (p.position.y + 0.5); // 越高越透明
+                if(p.position.y > 0.5) {
+                    p.position.y = -0.5; // 重新回到杯口
+                }
+            });
+
+            // 3. 喝水动作状态机
+            if (drinkState.active) {
+                drinkState.progress += delta * 1.2; // 动作速度
+
+                if (drinkState.progress <= 1) {
+                    // 抬手阶段 (0 到 1)
+                    armGroup.rotation.x = -Math.PI * 0.65 * Math.sin(drinkState.progress * Math.PI / 2);
+                } else if (drinkState.progress <= 2) {
+                    // 喝水停顿阶段 (1 到 2)
+                    armGroup.rotation.x = -Math.PI * 0.65;
+                } else if (drinkState.progress <= 3) {
+                    // 放下阶段 (2 到 3)
+                    let lowerP = drinkState.progress - 2;
+                    armGroup.rotation.x = -Math.PI * 0.65 * Math.cos(lowerP * Math.PI / 2);
+                } else {
+                    // 动作结束
+                    drinkState.active = false;
+                    armGroup.rotation.x = 0;
+                }
+            }
+
+            // 4. 视差跟随
+            camera.position.x += (cameraBasePosition.x + mouseX * 1 - camera.position.x) * 0.05;
+            camera.position.y += (cameraBasePosition.y - mouseY * 1 - camera.position.y) * 0.05;
+            camera.lookAt(character.position.x, character.position.y + 1, character.position.z);
+
+            renderer.render(scene, camera);
+        }
+
+        animate();
+
+        window.addEventListener('resize', () => {
+            camera.aspect = window.innerWidth / window.innerHeight;
+            camera.updateProjectionMatrix();
+            renderer.setSize(window.innerWidth, window.innerHeight);
+        });
+    </script>
+</body>
+</html>
