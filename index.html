@@ -20,8 +20,28 @@
             pointer-events: auto;
             box-shadow: 8px 8px 0px #2a9d8f;
             transition: transform 0.3s ease, box-shadow 0.3s ease;
+            position: relative;
         }
         .card:hover { transform: translate(-4px, -4px); box-shadow: 12px 12px 0px #2a9d8f; }
+        
+        .card.fly-away {
+            transition: transform 1.5s cubic-bezier(0.55, 0.085, 0.68, 0.53), opacity 1.5s !important;
+            transform: translate(120vw, -50vh) rotate(850deg) scale(0.2) !important;
+            opacity: 0 !important;
+            pointer-events: none !important;
+        }
+        .card.fly-back {
+            transition: transform 1.2s cubic-bezier(0.175, 0.885, 0.32, 1.275), opacity 1.2s !important;
+            transform: translate(0, 0) rotate(0deg) scale(1) !important;
+            opacity: 1 !important;
+            pointer-events: auto !important;
+        }
+
+        #btn-hide-card {
+            position: absolute; top: 15px; right: 15px; background: #fff; border: 2px dashed #264653; color: #264653; font-family: 'Noto Sans SC', sans-serif; font-size: 12px; font-weight: bold; cursor: pointer; padding: 4px 8px; border-radius: 6px; transition: all 0.2s;
+        }
+        #btn-hide-card:hover { transform: translate(-2px, -2px) rotate(-5deg); background: #e76f51; border-color: #e76f51; color: #fff; box-shadow: 3px 3px 0 #264653; }
+        #btn-hide-card:active { transform: translate(2px, 2px) rotate(5deg); box-shadow: 0px 0px 0 #264653; }
         
         h1 { font-family: 'DotGothic16', sans-serif; font-size: 32px; margin: 0 0 15px 0; color: #e76f51; }
         h2 { font-size: 16px; color: #264653; margin-top: 0; margin-bottom: 20px; font-weight: bold; }
@@ -74,6 +94,7 @@
     
     <div id="ui-container">
         <div class="card">
+            <button id="btn-hide-card" title="看腻了？让风带走它">💨 随风而去</button>
             <h1>> 李仁康 _</h1>
             <h2>跨境全栈开发者 / 前端基础架构师</h2>
             <div class="quote">“代码跑通了，去码头整点薯条。”</div>
@@ -99,6 +120,7 @@
         <button class="menu-item" id="btn-sprint">🚀 破防狂奔 (光速下班模式)</button>
         <button class="menu-item" id="btn-hat">🎩 融入环境 (戴上原生态帽子)</button>
         <button class="menu-item" id="btn-slash" style="background: #e63946;">⚔️ 拔剑吧！(全屏秒杀变炸鸡)</button>
+        <button class="menu-item" id="btn-show-card" style="display: none; background: #2a9d8f;">🎣 顺着网线捞回简历</button>
     </div>
 
     <script>
@@ -120,6 +142,7 @@
         let isSprintMode = false;
         let hasPigeonHat = false;
         let slashTimer = 0;
+        let slashLines = [];
 
         function resize() {
             width = window.innerWidth;
@@ -132,6 +155,7 @@
                 pigeons = [
                     { x: width * 0.8, y: height * 0.73, speed: 1, type: 'walk', offset: 0, facingRight: false, eating: false },
                     { x: width * 1.2, y: height * 0.74, speed: 1.2, type: 'walk', offset: 1, facingRight: false, eating: false },
+                    { x: width * 1.8, y: height * 0.73, speed: 1.5, type: 'walk', offset: 4, facingRight: false, eating: false },
                     { x: width * 0.5, y: height * 0.2, speed: 3, type: 'fly', offset: 2 },
                     { x: width * 1.5, y: height * 0.15, speed: 3.5, type: 'fly', offset: 3 }
                 ];
@@ -142,6 +166,33 @@
         resize();
 
         // UI 事件绑定
+        document.getElementById('btn-hide-card').addEventListener('mousedown', (e) => {
+            e.stopPropagation();
+            const card = document.querySelector('.card');
+            card.classList.remove('fly-back');
+            card.classList.add('fly-away');
+            document.getElementById('btn-show-card').style.display = 'block';
+            
+            // 阵风特效
+            cameraShake = 15;
+            for(let i=0; i<20; i++) {
+                fries.push({
+                    x: -200 + Math.random() * 200,
+                    y: height * 0.1 + Math.random() * height * 0.6,
+                    life: 800, isDebris: true,
+                    vx: 15 + Math.random() * 15, vy: (Math.random() - 0.5) * 5
+                });
+            }
+        });
+
+        document.getElementById('btn-show-card').addEventListener('mousedown', (e) => {
+            e.stopPropagation();
+            const card = document.querySelector('.card');
+            card.classList.remove('fly-away');
+            card.classList.add('fly-back');
+            document.getElementById('btn-show-card').style.display = 'none';
+        });
+
         document.getElementById('menu-btn').addEventListener('mousedown', (e) => {
             e.stopPropagation();
             const menu = document.getElementById('secret-menu');
@@ -190,27 +241,12 @@
 
         document.getElementById('btn-slash').addEventListener('mousedown', (e) => {
             e.stopPropagation();
-            slashTimer = 20;
-            cameraShake = 50;
-            
-            pigeons.forEach(p => {
-                // 变炸鸡腿
-                fries.push({
-                    x: p.x, y: p.y, life: 800, isChickenLeg: true, 
-                    vy: -10 + Math.random() * -5, vx: (Math.random() - 0.5) * 15
-                });
-                // 飘羽毛
-                for(let i=0; i<4; i++){
-                    fries.push({
-                        x: p.x, y: p.y, life: 400, isFeather: true,
-                        vy: -4 + Math.random() * -4, vx: (Math.random() - 0.5) * 8
-                    });
-                }
-            });
-            pigeons = []; // 清空鸽子
-            if (hasPigeonHat) hasPigeonHat = false; // 帽子也杀掉
-            document.getElementById('btn-hat').innerText = '🎩 融入环境 (戴上原生态帽子)';
+            if (slashTimer > 0) return; // 防连击
+            slashTimer = 110; // 极度拉长前摇，制造压迫感
+            cameraShake = 0; 
+            slashLines = [];
         });
+
 
         // 交互逻辑：点击起跳 或 扔薯条
         window.addEventListener('mousedown', (e) => {
@@ -238,7 +274,12 @@
         });
 
         function drawBackground(time) {
-            let currentScrollSpeed = isSprintMode ? 15 : 1.5;
+            // 修复狂奔晕眩：背景速度只稍微加快
+            let currentScrollSpeed = isSprintMode ? 4 : 1.5;
+            // 次元斩：时停与慢动作控制
+            if (slashTimer > 30) currentScrollSpeed *= 0; // 彻底时停
+            else if (slashTimer > 0) currentScrollSpeed *= 0.15; // 碎裂后的子弹时间
+            
             scrollPos += currentScrollSpeed; 
             
             // Sky
@@ -336,17 +377,21 @@
         }
 
         function drawEntities(time) {
-            let baseScroll = isSprintMode ? 15 : 1.5;
+            let baseScroll = isSprintMode ? 4 : 1.5;
+            let timeScale = 1;
+            if (slashTimer > 30) timeScale = 0; // 时停
+            else if (slashTimer > 0) timeScale = 0.15; // 慢放
 
             // Draw & Update Fries (and Chicken Legs/Feathers)
             fries.forEach((f, i) => {
                 if (f.y < height * 0.75) {
-                    f.vy += (f.isFeather ? 0.2 : 1.2); // Gravity
-                    f.y += f.vy;
+                    f.vy += (f.isFeather ? 0.2 : 1.2) * timeScale; // Gravity
+                    f.y += f.vy * timeScale;
                     
                     if (f.vx) {
-                        f.x += f.vx;
-                        f.vx *= (f.isFeather ? 0.92 : 0.98); // Air friction
+                        f.x += f.vx * timeScale;
+                        // 落叶/风残骸不怎么受空气阻力影响
+                        f.vx *= (f.isFeather ? 0.92 : (f.isDebris ? 1 : 0.98)); 
                     }
 
                     if (f.y >= height * 0.75) {
@@ -360,10 +405,12 @@
                             else { f.vy = 0; f.vx = 0; }
                         } else if (f.isFeather) {
                             f.vy = 0; f.vx = 0;
+                        } else if (f.isDebris) {
+                            f.vy = -3; // 随风反弹
                         }
                     }
                 } else {
-                    f.x -= baseScroll; 
+                    f.x -= baseScroll * timeScale; 
                     f.life -= 1; // Decay when on ground
                 }
 
@@ -374,6 +421,7 @@
                         ctx.fillStyle = '#e9c46a'; 
                         ctx.fillRect(f.x - 30, f.y - 30, 80, 30); 
                         ctx.fillRect(f.x - 10, f.y - 50, 60, 20); 
+                        // Ketchup splatter
                         ctx.fillStyle = '#e63946';
                         ctx.fillRect(f.x + 10, f.y - 35, 20, 10);
                         ctx.fillRect(f.x - 15, f.y - 25, 15, 15);
@@ -385,6 +433,9 @@
                     } else if (f.isFeather) {
                         ctx.fillStyle = '#fff';
                         ctx.fillRect(f.x, f.y - 6, 6, 6);
+                    } else if (f.isDebris) {
+                        ctx.fillStyle = '#264653'; 
+                        ctx.fillRect(f.x, f.y, 8, 8);
                     } else {
                         ctx.fillStyle = '#e9c46a'; 
                         ctx.fillRect(f.x, f.y, 12, 5);
@@ -396,13 +447,13 @@
             // Update Pigeons
             pigeons.forEach(p => {
                 if (p.type === 'walk') {
-                    p.x -= baseScroll; 
+                    p.x -= baseScroll * timeScale; 
                     
                     let targetFry = null;
                     let minDist = 600;
                     fries.forEach(f => {
                         let dist = Math.abs(f.x - p.x);
-                        if (f.y >= height * 0.75 && dist < minDist && f.life > 0) {
+                        if (f.y >= height * 0.75 && dist < minDist && f.life > 0 && !f.isChickenLeg && !f.isFeather) {
                             minDist = dist;
                             targetFry = f;
                         }
@@ -411,20 +462,20 @@
                     if (targetFry) {
                         let arriveDist = targetFry.isGiant ? 50 : 15;
                         if (p.x < targetFry.x - arriveDist) {
-                            p.x += 4.5; 
+                            p.x += 4.5 * timeScale; 
                             p.facingRight = true;
                             p.eating = false;
                         } else if (p.x > targetFry.x + arriveDist) {
-                            p.x -= 4.5; 
+                            p.x -= 4.5 * timeScale; 
                             p.facingRight = false;
                             p.eating = false;
                         } else {
                             targetFry.life -= (targetFry.isGiant ? 1 : 3);
                             p.eating = true;
-                            p.x += baseScroll; 
+                            p.x += baseScroll * timeScale; 
                         }
                     } else {
-                        p.x -= p.speed; 
+                        p.x -= p.speed * timeScale; 
                         p.facingRight = false;
                         p.eating = false;
                     }
@@ -456,7 +507,7 @@
                     
                 } else {
                     // Flying pigeon
-                    p.x -= p.speed;
+                    p.x -= p.speed * timeScale;
                     if (p.x < -100) {
                         p.x = width + 200 + Math.random() * 500;
                         p.y = height * 0.1 + Math.random() * height * 0.3;
@@ -474,7 +525,7 @@
             });
         }
 
-        function drawBoy(time) {
+        function drawBoy(time, offsetX = 0) {
             if (isJumping) {
                 boyYOffset -= boyVelocityY;
                 boyVelocityY += 0.8;
@@ -484,7 +535,7 @@
                 }
             }
 
-            const x = width * 0.35;
+            const x = width * 0.35 + offsetX;
             const groundY = height * 0.75 - boyYOffset;
             
             const speed = isJumping ? 0 : (isSprintMode ? 20 : 5);
@@ -508,7 +559,7 @@
             ctx.translate(x, groundY);
             
             if (!isJumping) {
-                ctx.translate(0, -Math.abs(Math.sin(walkCycle * 2)) * (isSprintMode ? 10 : 6));
+                ctx.translate(0, -Math.abs(Math.sin(walkCycle * 2)) * (isSprintMode ? 8 : 6));
             }
             
             // Draw Pigeon Hat
@@ -600,26 +651,105 @@
 
             drawBackground(time);
             drawEntities(time);
-            drawBoy(time);
             
-            // Slash effect overlay
+            // 人物残影 (仅狂奔模式下)
+            if (isSprintMode) {
+                ctx.globalAlpha = 0.2;
+                drawBoy(time, -60);
+                ctx.globalAlpha = 0.5;
+                drawBoy(time, -30);
+                ctx.globalAlpha = 1.0;
+            }
+            drawBoy(time, 0);
+            
+            // 动作游戏级别的“次元斩”特效 (Judgment Cut)
             if (slashTimer > 0) {
                 ctx.save();
-                ctx.beginPath();
-                ctx.moveTo(0, height * 0.2);
-                ctx.lineTo(width, height * 0.8);
-                ctx.lineWidth = slashTimer * 8;
-                ctx.strokeStyle = '#fff';
-                ctx.stroke();
                 
-                ctx.beginPath();
-                ctx.moveTo(0, height * 0.8);
-                ctx.lineTo(width, height * 0.2);
-                ctx.lineWidth = slashTimer * 4;
-                ctx.strokeStyle = '#e63946';
-                ctx.stroke();
+                if (slashTimer > 30) {
+                    // 阶段1&2：全屏极暗化、绝对时停、空间中爆发无数狂乱斩击
+                    ctx.fillStyle = 'rgba(5, 5, 10, 0.85)';
+                    ctx.fillRect(0, 0, width, height);
+                    
+                    // 每隔几帧生成一道新斩击
+                    if (slashTimer % 4 === 0 && slashTimer > 45 && slashTimer < 105) {
+                        let angle = Math.random() * Math.PI;
+                        let cx = width * 0.2 + Math.random() * width * 0.6;
+                        let cy = height * 0.2 + Math.random() * height * 0.6;
+                        let length = width * 1.5;
+                        slashLines.push({
+                            x1: cx - Math.cos(angle) * length,
+                            y1: cy - Math.sin(angle) * length,
+                            x2: cx + Math.cos(angle) * length,
+                            y2: cy + Math.sin(angle) * length,
+                            age: 0
+                        });
+                        cameraShake = 12; // 极短的尖锐震动
+                    }
+                    
+                    // 绘制滞留的斩击线
+                    slashLines.forEach(line => {
+                        ctx.beginPath();
+                        ctx.moveTo(line.x1, line.y1);
+                        ctx.lineTo(line.x2, line.y2);
+                        
+                        // 锐利白光核心
+                        ctx.lineWidth = Math.max(1, 4 - line.age * 0.2);
+                        ctx.strokeStyle = '#ffffff';
+                        ctx.stroke();
+                        
+                        // 青色/紫色外发光残影
+                        ctx.lineWidth = Math.max(2, 20 - line.age * 0.8);
+                        ctx.strokeStyle = (line.age % 2 === 0) ? 'rgba(0, 255, 255, 0.5)' : 'rgba(157, 78, 221, 0.5)';
+                        ctx.stroke();
+                        
+                        line.age++;
+                    });
+
+                } else if (slashTimer === 30) {
+                    // 阶段3：斩击结束的瞬间，虚空碎裂，白屏爆闪
+                    ctx.fillStyle = '#ffffff';
+                    ctx.fillRect(0, 0, width, height);
+                    cameraShake = 80; // 毁灭级震动
+                    
+                    // 结算伤害：所有鸽子爆成鸡腿
+                    pigeons.forEach(p => {
+                        fries.push({
+                            x: p.x, y: p.y, life: 1000, isChickenLeg: true, 
+                            vy: -15 + Math.random() * -10, vx: (Math.random() - 0.5) * 20
+                        });
+                        for(let i=0; i<6; i++){
+                            fries.push({
+                                x: p.x, y: p.y, life: 500, isFeather: true,
+                                vy: -5 + Math.random() * -5, vx: (Math.random() - 0.5) * 15
+                            });
+                        }
+                    });
+                    pigeons = []; 
+                    
+                    // 头顶的鸽子也难逃一劫
+                    if (hasPigeonHat) {
+                        hasPigeonHat = false; 
+                        document.getElementById('btn-hat').innerText = '🎩 融入环境 (戴上原生态帽子)';
+                        fries.push({
+                            x: width * 0.35, y: height * 0.75 - boyYOffset - 110, life: 1000, isChickenLeg: true, 
+                            vy: -18, vx: (Math.random() - 0.5) * 20
+                        });
+                        for(let i=0; i<6; i++){
+                            fries.push({
+                                x: width * 0.35, y: height * 0.75 - boyYOffset - 110, life: 500, isFeather: true,
+                                vy: -5 + Math.random() * -5, vx: (Math.random() - 0.5) * 15
+                            });
+                        }
+                    }
+                    
+                } else {
+                    // 阶段4：白光随子弹时间缓缓散去，烤鸡腿在空中慢动作飞舞
+                    ctx.fillStyle = `rgba(255, 255, 255, ${slashTimer / 30})`;
+                    ctx.fillRect(0, 0, width, height);
+                }
+                
                 ctx.restore();
-                
                 slashTimer--;
             }
 
