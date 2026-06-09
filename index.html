@@ -6,60 +6,48 @@
     <title>李仁康的码头时刻 | 个人主页</title>
     <link href="https://fonts.googleapis.com/css2?family=DotGothic16&family=Noto+Sans+SC:wght@500;700&display=swap" rel="stylesheet">
     <style>
-        body { margin: 0; overflow: hidden; background-color: #ffd166; font-family: 'Noto Sans SC', sans-serif; }
-        canvas { display: block; width: 100vw; height: 100vh; cursor: pointer; }
+        body { margin: 0; overflow: hidden; background-color: #ffb482; font-family: 'Noto Sans SC', sans-serif; }
+        canvas { display: block; width: 100vw; height: 100vh; }
+        
         #ui-container { position: absolute; top: 0; left: 0; width: 100%; height: 100%; pointer-events: none; display: flex; flex-direction: column; justify-content: center; align-items: flex-start; padding: 6vw; box-sizing: border-box; }
+        
         .card {
-            background: rgba(255, 255, 255, 0.85);
-            backdrop-filter: blur(8px);
-            border: 3px solid #333;
-            border-radius: 8px;
+            background: rgba(255, 255, 255, 0.9);
+            border: 4px solid #264653;
+            border-radius: 12px;
             padding: 30px;
             max-width: 420px;
             pointer-events: auto;
-            box-shadow: 8px 8px 0px #333;
-            transition: transform 0.2s;
+            box-shadow: 8px 8px 0px #2a9d8f;
+            transition: transform 0.3s ease, box-shadow 0.3s ease;
         }
-        .card:hover { transform: translate(-2px, -2px); box-shadow: 10px 10px 0px #333; }
-        h1 { font-family: 'DotGothic16', sans-serif; font-size: 28px; margin: 0 0 15px 0; color: #ef476f; }
-        h2 { font-size: 16px; color: #333; margin-top: 0; margin-bottom: 20px; }
-        ul { padding-left: 20px; color: #555; font-size: 14px; line-height: 1.8; margin-bottom: 25px; }
-        .quote { font-family: 'DotGothic16', sans-serif; color: #118ab2; font-weight: bold; margin-bottom: 20px; font-size: 16px;}
-        .links { display: flex; gap: 15px; }
-        .links a { text-decoration: none; color: #fff; background: #333; padding: 8px 16px; font-size: 14px; font-weight: bold; border-radius: 4px; transition: all 0.2s; }
-        .links a:hover { background: #ef476f; transform: translateY(-2px); }
-        #hint {
-            position: absolute;
-            bottom: 30px;
-            left: 50%;
-            transform: translateX(-50%);
-            font-family: 'DotGothic16', sans-serif;
-            color: #333;
-            background: rgba(255,255,255,0.9);
-            border: 2px solid #333;
-            padding: 8px 20px;
-            border-radius: 20px;
-            font-size: 15px;
-            font-weight: bold;
-            pointer-events: none;
-            box-shadow: 3px 3px 0 #333;
-            animation: bounce 2s infinite;
-        }
-        @keyframes bounce { 0%, 100% { transform: translate(-50%, 0); } 50% { transform: translate(-50%, -6px); } }
+        .card:hover { transform: translate(-4px, -4px); box-shadow: 12px 12px 0px #2a9d8f; }
+        
+        h1 { font-family: 'DotGothic16', sans-serif; font-size: 32px; margin: 0 0 15px 0; color: #e76f51; }
+        h2 { font-size: 16px; color: #264653; margin-top: 0; margin-bottom: 20px; font-weight: bold; }
+        ul { padding-left: 20px; color: #264653; font-size: 15px; line-height: 1.8; margin-bottom: 25px; list-style-type: square; }
+        .quote { font-family: 'DotGothic16', sans-serif; color: #2a9d8f; font-weight: bold; margin-bottom: 20px; font-size: 18px; background: #fff; padding: 10px; border: 2px dashed #2a9d8f; display: inline-block; }
+        
+        .links { display: flex; gap: 15px; flex-wrap: wrap; }
+        .links a { text-decoration: none; color: #fff; background: #264653; padding: 10px 20px; font-size: 16px; font-weight: bold; border-radius: 6px; transition: all 0.2s; box-shadow: 4px 4px 0px #1d3557; }
+        .links a:hover { background: #e76f51; transform: translate(-2px, -2px); box-shadow: 6px 6px 0px #1d3557; }
+        .links a:active { transform: translate(2px, 2px); box-shadow: 2px 2px 0px #1d3557; }
+        
     </style>
 </head>
 <body>
-
+    <canvas id="scene"></canvas>
+    
     <div id="ui-container">
         <div class="card">
             <h1>> 李仁康 _</h1>
-            <h2>D2C 基础设施开发者 / 像素风爱好者</h2>
-            <div class="quote">“代码跑通了，去码头喝口热饮。”</div>
+            <h2>跨境全栈开发者 / 前端基础架构师</h2>
+            <div class="quote">“代码跑通了，去码头整点薯条。”</div>
             <ul>
-                <li>专注 D2C 电商平台架构与 Web 基础设施</li>
-                <li>主导 Sentry 监控、白屏噪点优化与 DSN 治理</li>
-                <li>熟练管理 34+ 核心项目模板及自动化 CI/CD</li>
-                <li>个人主页阵地：lrk.666.eu.org</li>
+                <li>专注 Shopify 类独立站开发与跨境电商前端基础设施</li>
+                <li>精通广告像素追踪 (Pixel) 与复杂数据链路治理</li>
+                <li>深耕监控体系性能调优、白屏治理及自动化 CI/CD</li>
+                <li>探索 WebGL 视觉体验，主页阵地：lrk.666.eu.org</li>
             </ul>
             <div class="links">
                 <a href="#github" target="_blank">GitHub</a>
@@ -68,197 +56,239 @@
         </div>
     </div>
 
-    <div id="hint">☕️ 点击任意位置，喝口热饮</div>
+    <script>
+        const canvas = document.getElementById('scene');
+        const ctx = canvas.getContext('2d');
+        
+        let width, height;
+        let scrollPos = 0;
+        let pigeons = [];
 
-    <script type="module">
-        import * as THREE from 'https://unpkg.com/three@0.150.1/build/three.module.js';
-
-        const scene = new THREE.Scene();
-        scene.background = new THREE.Color(0xffd166);
-        scene.fog = new THREE.Fog(0xffd166, 10, 30);
-
-        // 【优化机位】移到角色的右前侧，完美看清侧脸和右手拿杯子的动作
-        const camera = new THREE.PerspectiveCamera(45, window.innerWidth / window.innerHeight, 0.1, 100);
-        const cameraBasePosition = { x: 5, y: 3.5, z: -1 };
-        camera.position.set(cameraBasePosition.x, cameraBasePosition.y, cameraBasePosition.z);
-
-        const renderer = new THREE.WebGLRenderer({ antialias: true });
-        renderer.setPixelRatio(Math.min(window.devicePixelRatio, 2));
-        renderer.setSize(window.innerWidth, window.innerHeight);
-        renderer.shadowMap.enabled = true;
-        renderer.shadowMap.type = THREE.PCFSoftShadowMap;
-        document.body.appendChild(renderer.domElement);
-
-        const ambientLight = new THREE.AmbientLight(0xffffff, 0.7);
-        scene.add(ambientLight);
-        const dirLight = new THREE.DirectionalLight(0xffeedd, 1.2);
-        dirLight.position.set(5, 10, 5);
-        dirLight.castShadow = true;
-        scene.add(dirLight);
-
-        // 材质
-        const matSea = new THREE.MeshStandardMaterial({ color: 0x118ab2, roughness: 0.1, metalness: 0.1 });
-        const matWood = new THREE.MeshStandardMaterial({ color: 0x8a5a44, roughness: 0.8 });
-        const matSkin = new THREE.MeshStandardMaterial({ color: 0xffcdb2 });
-        const matClothes = new THREE.MeshStandardMaterial({ color: 0x06d6a0 });
-        const matPants = new THREE.MeshStandardMaterial({ color: 0x073b4c });
-        const matCup = new THREE.MeshStandardMaterial({ color: 0xffffff }); // 白瓷杯更显热饮感
-        const matSteam = new THREE.MeshBasicMaterial({ color: 0xffffff, transparent: true, opacity: 0.6 });
-
-        // 环境：海与码头
-        const sea = new THREE.Mesh(new THREE.BoxGeometry(40, 4, 40), matSea);
-        sea.position.y = -2.5;
-        sea.receiveShadow = true;
-        scene.add(sea);
-
-        const deck = new THREE.Mesh(new THREE.BoxGeometry(8, 1, 15), matWood);
-        deck.position.set(0, -0.5, -2);
-        deck.receiveShadow = true;
-        deck.castShadow = true;
-        scene.add(deck);
-
-        // ==========================================
-        // 构建主角李仁康
-        // ==========================================
-        const character = new THREE.Group();
-
-        // 身体
-        const body = new THREE.Mesh(new THREE.BoxGeometry(1, 1.2, 0.6), matClothes);
-        body.position.set(0, 0.8, 0);
-        body.castShadow = true;
-        character.add(body);
-
-        // 头
-        const head = new THREE.Mesh(new THREE.BoxGeometry(0.8, 0.8, 0.8), matSkin);
-        head.position.set(0, 1.8, 0);
-        head.castShadow = true;
-        character.add(head);
-
-        // 腿
-        const legL = new THREE.Mesh(new THREE.BoxGeometry(0.4, 1.2, 0.4), matPants);
-        legL.position.set(0.25, -0.4, 0.3);
-        legL.castShadow = true;
-        const legR = new THREE.Mesh(new THREE.BoxGeometry(0.4, 1.2, 0.4), matPants);
-        legR.position.set(-0.25, -0.4, 0.3);
-        legR.castShadow = true;
-        character.add(legL, legR);
-
-        // 左手闲置
-        const armL = new THREE.Mesh(new THREE.BoxGeometry(0.3, 0.9, 0.3), matSkin);
-        armL.position.set(0.6, 0.9, 0); // 角色左侧
-        armL.castShadow = true;
-        character.add(armL);
-
-        // 【右手臂与杯子】用于喝水动画
-        const armGroup = new THREE.Group();
-        armGroup.position.set(-0.6, 1.3, 0); // 肩膀枢纽点(角色右侧)
-
-        const armR = new THREE.Mesh(new THREE.BoxGeometry(0.3, 0.9, 0.3), matSkin);
-        armR.position.set(0, -0.3, 0);
-        armR.castShadow = true;
-        armGroup.add(armR);
-
-        const cup = new THREE.Mesh(new THREE.BoxGeometry(0.35, 0.45, 0.35), matCup);
-        cup.position.set(0, -0.8, 0.2); // 拿在手里
-        cup.castShadow = true;
-        armGroup.add(cup);
-
-        // 【热气特效】
-        const steamParticles = [];
-        for(let i = 0; i < 3; i++) {
-            const steam = new THREE.Mesh(new THREE.BoxGeometry(0.1, 0.1, 0.1), matSteam);
-            steam.position.set(0, -0.5 + i * 0.2, 0.2);
-            steam.userData = { offset: i * 0.3 }; // 错开上升时间
-            armGroup.add(steam);
-            steamParticles.push(steam);
+        function resize() {
+            width = window.innerWidth;
+            height = window.innerHeight;
+            canvas.width = width;
+            canvas.height = height;
+            
+            pigeons = [
+                { x: width * 0.8, y: height * 0.73, speed: 1, type: 'walk', offset: 0 },
+                { x: width * 1.2, y: height * 0.74, speed: 1.2, type: 'walk', offset: 1 },
+                { x: width * 0.5, y: height * 0.2, speed: 3, type: 'fly', offset: 2 },
+                { x: width * 1.5, y: height * 0.15, speed: 3.5, type: 'fly', offset: 3 }
+            ];
         }
 
-        character.add(armGroup);
+        window.addEventListener('resize', resize);
+        resize();
 
-        // 放置角色（坐在码头边缘，背对初始 Z 轴，面向海）
-        character.position.set(0, 0.5, -5);
-        character.rotation.y = Math.PI;
-        scene.add(character);
-
-        camera.lookAt(character.position.x, character.position.y + 1, character.position.z);
-
-        // ==========================================
-        // 动画控制系统 (丝滑版)
-        // ==========================================
-        let drinkState = { active: false, progress: 0 };
-
-        window.addEventListener('mousedown', () => {
-            if (!drinkState.active) {
-                drinkState.active = true;
-                drinkState.progress = 0;
-            }
-        });
-
-        // 鼠标视差
-        let mouseX = 0, mouseY = 0;
-        document.addEventListener('mousemove', (e) => {
-            mouseX = (e.clientX / window.innerWidth - 0.5) * 2;
-            mouseY = (e.clientY / window.innerHeight - 0.5) * 2;
-        });
-
-        const clock = new THREE.Clock();
-
-        function animate() {
-            requestAnimationFrame(animate);
-            const delta = clock.getDelta();
-            const time = clock.getElapsedTime();
-
-            // 1. 海面与双腿的休闲起伏
-            sea.position.y = -2.5 + Math.sin(time * 1.5) * 0.1;
-            legL.rotation.x = Math.sin(time * 2) * 0.1;
-            legR.rotation.x = Math.sin(time * 2 + Math.PI) * 0.1;
-
-            // 2. 热气上升动画
-            steamParticles.forEach(p => {
-                p.position.y += delta * 0.4;
-                p.position.x = Math.sin(time * 5 + p.userData.offset) * 0.05; // 左右微晃
-                p.material.opacity = 1 - (p.position.y + 0.5); // 越高越透明
-                if(p.position.y > 0.5) {
-                    p.position.y = -0.5; // 重新回到杯口
+        function drawBackground(time) {
+            scrollPos += 1.5; // Leisurely scroll speed
+            
+            // Sky (Sunset)
+            ctx.fillStyle = '#ffb482';
+            ctx.fillRect(0, 0, width, height);
+            
+            // Sun
+            ctx.fillStyle = '#e76f51';
+            ctx.beginPath();
+            ctx.arc(width * 0.7, height * 0.4, Math.min(width, height) * 0.15, 0, Math.PI * 2);
+            ctx.fill();
+            
+            // Sea
+            const seaY = height * 0.55;
+            ctx.fillStyle = '#2a9d8f';
+            ctx.fillRect(0, seaY, width, height - seaY);
+            
+            // Distant Cafe & Pier (Parallax slow)
+            const cafeSpacing = 1200;
+            const layer1Scroll = scrollPos * 0.4;
+            const startX1 = -(layer1Scroll % cafeSpacing);
+            
+            for(let x = startX1; x < width + cafeSpacing; x += cafeSpacing) {
+                // Cafe Building
+                ctx.fillStyle = '#e9c46a';
+                ctx.fillRect(x, seaY - 120, 260, 120);
+                // Windows
+                ctx.fillStyle = '#8ab4f8';
+                ctx.fillRect(x + 30, seaY - 90, 70, 50);
+                ctx.fillRect(x + 120, seaY - 90, 70, 50);
+                // Awning
+                for(let i = 0; i < 13; i++) {
+                    ctx.fillStyle = (i % 2 === 0) ? '#e63946' : '#f1faee';
+                    ctx.fillRect(x + i * 20, seaY - 130, 20, 30);
                 }
-            });
+                
+                // Open-air Tables (露天咖啡桌)
+                ctx.fillStyle = '#e76f51'; // Table color
+                ctx.fillRect(x - 60, seaY - 20, 40, 6); // table top
+                ctx.fillRect(x - 45, seaY - 14, 10, 14); // table leg
+                
+                ctx.fillRect(x + 280, seaY - 20, 40, 6); 
+                ctx.fillRect(x + 295, seaY - 14, 10, 14);
+                
+                // Chairs
+                ctx.fillStyle = '#264653';
+                ctx.fillRect(x - 80, seaY - 15, 10, 5); // left chair
+                ctx.fillRect(x - 15, seaY - 15, 10, 5); // right chair
+                
+                ctx.fillRect(x + 260, seaY - 15, 10, 5);
+                ctx.fillRect(x + 325, seaY - 15, 10, 5);
+            }
+            
+            // Pier Floor
+            const groundY = height * 0.75;
+            ctx.fillStyle = '#e7c697';
+            ctx.fillRect(0, groundY, width, height - groundY);
+            
+            // Pier Edge details (wooden planks)
+            ctx.fillStyle = '#d4a373';
+            ctx.fillRect(0, groundY, width, 10);
+            
+            // Pier Railing (Parallax fast)
+            const railSpacing = 160;
+            const startX2 = -(scrollPos % railSpacing);
+            ctx.fillStyle = '#264653';
+            
+            // Posts
+            for(let x = startX2; x < width + railSpacing; x += railSpacing) {
+                ctx.fillRect(x + 60, groundY - 70, 20, 70);
+            }
+            // Top rail
+            ctx.fillRect(0, groundY - 70, width, 15);
+            // Middle rail
+            ctx.fillRect(0, groundY - 35, width, 8);
+        }
 
-            // 3. 喝水动作状态机
-            if (drinkState.active) {
-                drinkState.progress += delta * 1.2; // 动作速度
-
-                if (drinkState.progress <= 1) {
-                    // 抬手阶段 (0 到 1)
-                    armGroup.rotation.x = -Math.PI * 0.65 * Math.sin(drinkState.progress * Math.PI / 2);
-                } else if (drinkState.progress <= 2) {
-                    // 喝水停顿阶段 (1 到 2)
-                    armGroup.rotation.x = -Math.PI * 0.65;
-                } else if (drinkState.progress <= 3) {
-                    // 放下阶段 (2 到 3)
-                    let lowerP = drinkState.progress - 2;
-                    armGroup.rotation.x = -Math.PI * 0.65 * Math.cos(lowerP * Math.PI / 2);
+        function drawPigeons(time) {
+            pigeons.forEach(p => {
+                p.x -= (p.speed + (p.type === 'walk' ? 1.5 : 0)); // Move left with ground or fly
+                if (p.x < -100) {
+                    p.x = width + 200 + Math.random() * 500;
+                    if (p.type === 'fly') p.y = height * 0.1 + Math.random() * height * 0.3;
+                }
+                
+                ctx.save();
+                if (p.type === 'walk') {
+                    // Walking pigeon
+                    const bounce = Math.abs(Math.sin(time * 8 + p.offset)) * 4;
+                    ctx.translate(p.x, p.y - bounce);
+                    
+                    ctx.fillStyle = '#ffffff'; // body
+                    ctx.fillRect(-12, -12, 24, 16);
+                    ctx.fillStyle = '#e76f51'; // beak
+                    ctx.fillRect(-18, -8, 6, 6);
+                    ctx.fillStyle = '#2b2b2b'; // eye
+                    ctx.fillRect(-10, -8, 4, 4);
+                    // legs
+                    ctx.fillStyle = '#e76f51';
+                    ctx.fillRect(-4, 4, 4, 6);
+                    ctx.fillRect(4, 4, 4, 6);
                 } else {
-                    // 动作结束
-                    drinkState.active = false;
-                    armGroup.rotation.x = 0;
+                    // Flying pigeon
+                    ctx.translate(p.x, p.y + Math.sin(time * 3 + p.offset) * 20);
+                    ctx.fillStyle = '#ffffff';
+                    ctx.fillRect(-18, -6, 36, 12); // body
+                    // wings
+                    const flap = Math.sin(time * 12 + p.offset);
+                    if (flap > 0) {
+                        ctx.fillRect(-8, -20, 16, 14); // wing up
+                    } else {
+                        ctx.fillRect(-8, 6, 16, 14); // wing down
+                    }
                 }
-            }
-
-            // 4. 视差跟随
-            camera.position.x += (cameraBasePosition.x + mouseX * 1 - camera.position.x) * 0.05;
-            camera.position.y += (cameraBasePosition.y - mouseY * 1 - camera.position.y) * 0.05;
-            camera.lookAt(character.position.x, character.position.y + 1, character.position.z);
-
-            renderer.render(scene, camera);
+                ctx.restore();
+            });
         }
 
-        animate();
+        function drawBoy(time) {
+            const x = width * 0.35;
+            const groundY = height * 0.75;
+            
+            const speed = 5;
+            const walkCycle = time * speed;
+            const leg1 = Math.sin(walkCycle);
+            const leg2 = Math.sin(walkCycle + Math.PI);
+            
+            ctx.save();
+            ctx.translate(x, groundY);
+            
+            // Leisurely bounce
+            ctx.translate(0, -Math.abs(Math.sin(walkCycle * 2)) * 6);
+            
+            const skin = '#ffcdb2';
+            const shirt = '#e9c46a';
+            const pants = '#264653';
+            
+            // Back Arm
+            ctx.save();
+            ctx.translate(2, -65);
+            ctx.rotate(leg2 * 0.5); 
+            ctx.fillStyle = skin;
+            ctx.fillRect(-6, 0, 12, 35);
+            ctx.restore();
+            
+            // Back Leg
+            ctx.save();
+            ctx.translate(0, -35);
+            ctx.rotate(leg2 * 0.6);
+            ctx.fillStyle = pants;
+            ctx.fillRect(-8, 0, 16, 38);
+            ctx.restore();
+            
+            // Body
+            ctx.fillStyle = shirt;
+            ctx.fillRect(-16, -75, 32, 45);
+            
+            // Head
+            ctx.save();
+            // Slight head bob
+            ctx.translate(0, Math.sin(walkCycle * 2) * 2);
+            ctx.fillStyle = skin;
+            ctx.fillRect(-14, -108, 28, 30);
+            // Hair
+            ctx.fillStyle = '#2b2b2b';
+            ctx.fillRect(-16, -114, 32, 14); // top hair
+            ctx.fillRect(8, -108, 8, 16); // bangs
+            ctx.fillRect(-16, -108, 8, 18); // back hair
+            // Eye
+            ctx.fillStyle = '#2b2b2b';
+            ctx.fillRect(6, -95, 4, 6);
+            ctx.restore();
+            
+            // Front Leg
+            ctx.save();
+            ctx.translate(0, -35);
+            ctx.rotate(leg1 * 0.6);
+            ctx.fillStyle = pants;
+            ctx.fillRect(-8, 0, 16, 38);
+            ctx.restore();
+            
+            // Front Arm
+            ctx.save();
+            ctx.translate(-2, -65);
+            ctx.rotate(leg1 * 0.5);
+            ctx.fillStyle = skin;
+            ctx.fillRect(-6, 0, 12, 35);
+            // Sleeve
+            ctx.fillStyle = shirt;
+            ctx.fillRect(-7, 0, 14, 12);
+            ctx.restore();
+            
+            ctx.restore();
+        }
 
-        window.addEventListener('resize', () => {
-            camera.aspect = window.innerWidth / window.innerHeight;
-            camera.updateProjectionMatrix();
-            renderer.setSize(window.innerWidth, window.innerHeight);
-        });
+        function animate(timestamp) {
+            requestAnimationFrame(animate);
+            const time = timestamp / 1000;
+            
+            ctx.clearRect(0, 0, width, height);
+            
+            drawBackground(time);
+            drawPigeons(time);
+            drawBoy(time);
+        }
+
+        requestAnimationFrame(animate);
     </script>
 </body>
 </html>
