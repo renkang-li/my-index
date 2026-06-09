@@ -6,11 +6,11 @@
     <title>李仁康的码头时刻 | 个人主页</title>
     <link href="https://fonts.googleapis.com/css2?family=DotGothic16&family=Noto+Sans+SC:wght@500;700&display=swap" rel="stylesheet">
     <style>
-        body { margin: 0; overflow: hidden; background-color: #ffb482; font-family: 'Noto Sans SC', sans-serif; }
+        body { margin: 0; overflow: hidden; background-color: #ffb482; font-family: 'Noto Sans SC', sans-serif; cursor: crosshair; }
         canvas { display: block; width: 100vw; height: 100vh; }
-
+        
         #ui-container { position: absolute; top: 0; left: 0; width: 100%; height: 100%; pointer-events: none; display: flex; flex-direction: column; justify-content: center; align-items: flex-start; padding: 6vw; box-sizing: border-box; }
-
+        
         .card {
             background: rgba(255, 255, 255, 0.9);
             border: 4px solid #264653;
@@ -22,22 +22,56 @@
             transition: transform 0.3s ease, box-shadow 0.3s ease;
         }
         .card:hover { transform: translate(-4px, -4px); box-shadow: 12px 12px 0px #2a9d8f; }
-
+        
         h1 { font-family: 'DotGothic16', sans-serif; font-size: 32px; margin: 0 0 15px 0; color: #e76f51; }
         h2 { font-size: 16px; color: #264653; margin-top: 0; margin-bottom: 20px; font-weight: bold; }
         ul { padding-left: 20px; color: #264653; font-size: 15px; line-height: 1.8; margin-bottom: 25px; list-style-type: square; }
         .quote { font-family: 'DotGothic16', sans-serif; color: #2a9d8f; font-weight: bold; margin-bottom: 20px; font-size: 18px; background: #fff; padding: 10px; border: 2px dashed #2a9d8f; display: inline-block; }
-
+        
         .links { display: flex; gap: 15px; flex-wrap: wrap; }
         .links a { text-decoration: none; color: #fff; background: #264653; padding: 10px 20px; font-size: 16px; font-weight: bold; border-radius: 6px; transition: all 0.2s; box-shadow: 4px 4px 0px #1d3557; }
         .links a:hover { background: #e76f51; transform: translate(-2px, -2px); box-shadow: 6px 6px 0px #1d3557; }
         .links a:active { transform: translate(2px, 2px); box-shadow: 2px 2px 0px #1d3557; }
+        
+        #hint {
+            position: absolute;
+            bottom: 30px;
+            left: 50%;
+            transform: translateX(-50%);
+            font-family: 'DotGothic16', sans-serif;
+            color: #264653;
+            background: #fff;
+            border: 3px solid #264653;
+            padding: 10px 24px;
+            font-size: 18px;
+            font-weight: bold;
+            pointer-events: none;
+            box-shadow: 4px 4px 0 #2a9d8f;
+            animation: bounce 2s infinite;
+            z-index: 5;
+        }
+        @keyframes bounce { 0%, 100% { transform: translate(-50%, 0); } 50% { transform: translate(-50%, -6px); } }
 
+        /* 隐藏的搞笑菜单 */
+        #menu-btn {
+            position: absolute; bottom: 30px; right: 30px; background: #e76f51; color: #fff; border: 4px solid #264653; padding: 10px 20px; font-family: 'DotGothic16', sans-serif; font-size: 18px; font-weight: bold; cursor: pointer; box-shadow: 4px 4px 0 #2a9d8f; transition: all 0.1s; z-index: 20; border-radius: 8px;
+        }
+        #menu-btn:hover { transform: translate(-2px, -2px); box-shadow: 6px 6px 0 #2a9d8f; background: #2a9d8f; }
+        #menu-btn:active { transform: translate(2px, 2px); box-shadow: 2px 2px 0 #2a9d8f; }
+
+        #secret-menu {
+            display: none; position: absolute; bottom: 85px; right: 30px; background: #fff; border: 4px solid #264653; border-radius: 8px; padding: 15px; box-shadow: 8px 8px 0 #2a9d8f; flex-direction: column; gap: 10px; z-index: 10;
+        }
+        .menu-item {
+            background: #264653; color: #fff; border: 3px solid #1d3557; padding: 10px 16px; font-family: 'Noto Sans SC', sans-serif; font-size: 14px; font-weight: bold; cursor: pointer; box-shadow: 3px 3px 0 #1d3557; transition: all 0.1s; text-align: left; border-radius: 4px; white-space: nowrap;
+        }
+        .menu-item:hover { transform: translate(-2px, -2px); box-shadow: 5px 5px 0 #1d3557; background: #e76f51; }
+        .menu-item:active { transform: translate(2px, 2px); box-shadow: 1px 1px 0 #1d3557; }
     </style>
 </head>
 <body>
     <canvas id="scene"></canvas>
-
+    
     <div id="ui-container">
         <div class="card">
             <h1>> 李仁康 _</h1>
@@ -47,7 +81,7 @@
                 <li>专注 Shopify 类独立站开发与跨境电商前端基础设施</li>
                 <li>精通广告像素追踪 (Pixel) 与复杂数据链路治理</li>
                 <li>深耕监控体系性能调优、白屏治理及自动化 CI/CD</li>
-                <li>探索 WebGL 视觉体验，主页阵地：lrk666.eu.org</li>
+                <li>探索 WebGL 视觉体验，主页阵地：lrk.666.eu.org</li>
             </ul>
             <div class="links">
                 <a href="#github" target="_blank">GitHub</a>
@@ -56,236 +90,470 @@
         </div>
     </div>
 
+    <div id="hint">🍟 点击空地投喂薯条 / 点击少年起跳</div>
+
+    <button id="menu-btn">⚙️ 奇怪的菜单</button>
+    <div id="secret-menu">
+        <button class="menu-item" id="btn-swarm">🕊️ 召唤饿爹 (召唤鸽群)</button>
+        <button class="menu-item" id="btn-giant-fry">🍟 物理超度 (天降巨型薯条)</button>
+        <button class="menu-item" id="btn-sprint">🚀 破防狂奔 (光速下班模式)</button>
+        <button class="menu-item" id="btn-hat">🎩 融入环境 (戴上原生态帽子)</button>
+    </div>
+
     <script>
         const canvas = document.getElementById('scene');
         const ctx = canvas.getContext('2d');
-
+        
         let width, height;
         let scrollPos = 0;
         let pigeons = [];
+        let fries = [];
+        
+        // Boy physics & states
+        let boyVelocityY = 0;
+        let boyYOffset = 0;
+        let isJumping = false;
+        
+        // Secret Menu States
+        let cameraShake = 0;
+        let isSprintMode = false;
+        let hasPigeonHat = false;
 
         function resize() {
             width = window.innerWidth;
             height = window.innerHeight;
             canvas.width = width;
             canvas.height = height;
-
-            pigeons = [
-                { x: width * 0.8, y: height * 0.73, speed: 1, type: 'walk', offset: 0 },
-                { x: width * 1.2, y: height * 0.74, speed: 1.2, type: 'walk', offset: 1 },
-                { x: width * 0.5, y: height * 0.2, speed: 3, type: 'fly', offset: 2 },
-                { x: width * 1.5, y: height * 0.15, speed: 3.5, type: 'fly', offset: 3 }
-            ];
+            
+            // Default pigeons
+            if(pigeons.length === 0) {
+                pigeons = [
+                    { x: width * 0.8, y: height * 0.73, speed: 1, type: 'walk', offset: 0, facingRight: false, eating: false },
+                    { x: width * 1.2, y: height * 0.74, speed: 1.2, type: 'walk', offset: 1, facingRight: false, eating: false },
+                    { x: width * 0.5, y: height * 0.2, speed: 3, type: 'fly', offset: 2 },
+                    { x: width * 1.5, y: height * 0.15, speed: 3.5, type: 'fly', offset: 3 }
+                ];
+            }
         }
 
         window.addEventListener('resize', resize);
         resize();
 
-        function drawBackground(time) {
-            scrollPos += 1.5; // Leisurely scroll speed
+        // UI 事件绑定
+        document.getElementById('menu-btn').addEventListener('mousedown', (e) => {
+            e.stopPropagation();
+            const menu = document.getElementById('secret-menu');
+            menu.style.display = menu.style.display === 'none' || menu.style.display === '' ? 'flex' : 'none';
+        });
 
-            // Sky (Sunset)
+        document.getElementById('secret-menu').addEventListener('mousedown', e => e.stopPropagation());
+
+        document.getElementById('btn-swarm').addEventListener('mousedown', (e) => {
+            e.stopPropagation();
+            for(let i=0; i<30; i++) {
+                pigeons.push({
+                    x: width + Math.random() * 1200,
+                    y: height * 0.1 + Math.random() * height * 0.65,
+                    speed: 2 + Math.random() * 5,
+                    type: Math.random() > 0.4 ? 'fly' : 'walk',
+                    offset: Math.random() * 10,
+                    facingRight: false,
+                    eating: false
+                });
+            }
+        });
+
+        document.getElementById('btn-giant-fry').addEventListener('mousedown', (e) => {
+            e.stopPropagation();
+            fries.push({
+                x: width * 0.4 + Math.random() * 400,
+                y: -200, 
+                life: 1500,
+                isGiant: true,
+                vy: 0
+            });
+        });
+
+        document.getElementById('btn-sprint').addEventListener('mousedown', (e) => {
+            e.stopPropagation();
+            isSprintMode = !isSprintMode;
+            document.getElementById('btn-sprint').innerText = isSprintMode ? '🛑 取消狂奔模式' : '🚀 破防狂奔 (光速下班模式)';
+        });
+
+        document.getElementById('btn-hat').addEventListener('mousedown', (e) => {
+            e.stopPropagation();
+            hasPigeonHat = !hasPigeonHat;
+            document.getElementById('btn-hat').innerText = hasPigeonHat ? '🎩 拿走这只蠢鸟' : '🎩 融入环境 (戴上原生态帽子)';
+        });
+
+
+        // 交互逻辑：点击起跳 或 扔薯条
+        window.addEventListener('mousedown', (e) => {
+            if (e.target.id !== 'scene') return;
+
+            const boyX = width * 0.35;
+            const boyY = height * 0.75 - boyYOffset;
+            const dx = e.clientX - boyX;
+            const dy = e.clientY - boyY;
+            
+            if (Math.abs(dx) < 80 && Math.abs(dy) < 120) {
+                if (!isJumping) {
+                    isJumping = true;
+                    boyVelocityY = -15; 
+                }
+            } else {
+                fries.push({
+                    x: e.clientX,
+                    y: height * 0.75, // 普通薯条直接落到准星
+                    life: 300,
+                    isGiant: false,
+                    vy: 0
+                });
+            }
+        });
+
+        function drawBackground(time) {
+            let currentScrollSpeed = isSprintMode ? 15 : 1.5;
+            scrollPos += currentScrollSpeed; 
+            
+            // Sky
             ctx.fillStyle = '#ffb482';
             ctx.fillRect(0, 0, width, height);
-
+            
             // Sun
             ctx.fillStyle = '#e76f51';
             ctx.beginPath();
             ctx.arc(width * 0.7, height * 0.4, Math.min(width, height) * 0.15, 0, Math.PI * 2);
             ctx.fill();
-
+            
             // Sea
             const seaY = height * 0.55;
             ctx.fillStyle = '#2a9d8f';
             ctx.fillRect(0, seaY, width, height - seaY);
-
-            // Distant Cafe & Pier (Parallax slow)
-            const cafeSpacing = 1200;
+            
+            // Parallax layer: Distant Cafe 
+            const cafeSpacing = 1500;
             const layer1Scroll = scrollPos * 0.4;
             const startX1 = -(layer1Scroll % cafeSpacing);
-
+            
             for(let x = startX1; x < width + cafeSpacing; x += cafeSpacing) {
-                // Cafe Building
+                const cafeX = x + 300;
+                
+                // Building
                 ctx.fillStyle = '#e9c46a';
-                ctx.fillRect(x, seaY - 120, 260, 120);
+                ctx.fillRect(cafeX, seaY - 180, 320, 180);
+                
+                // CAFE Sign
+                ctx.fillStyle = '#264653';
+                ctx.fillRect(cafeX + 80, seaY - 170, 160, 45);
+                ctx.fillStyle = '#f4a261';
+                ctx.font = 'bold 32px "DotGothic16", sans-serif';
+                ctx.fillText('COFFEE CAFE', cafeX + 90, seaY - 138);
+                
                 // Windows
                 ctx.fillStyle = '#8ab4f8';
-                ctx.fillRect(x + 30, seaY - 90, 70, 50);
-                ctx.fillRect(x + 120, seaY - 90, 70, 50);
-                // Awning
-                for(let i = 0; i < 13; i++) {
+                ctx.fillRect(cafeX + 30, seaY - 100, 100, 70);
+                ctx.fillRect(cafeX + 190, seaY - 100, 100, 70);
+                // Window frames
+                ctx.fillStyle = '#264653';
+                ctx.fillRect(cafeX + 75, seaY - 100, 10, 70);
+                ctx.fillRect(cafeX + 30, seaY - 70, 100, 10);
+                ctx.fillRect(cafeX + 235, seaY - 100, 10, 70);
+                ctx.fillRect(cafeX + 190, seaY - 70, 100, 10);
+                
+                // Top Awning
+                for(let i = 0; i < 16; i++) {
                     ctx.fillStyle = (i % 2 === 0) ? '#e63946' : '#f1faee';
-                    ctx.fillRect(x + i * 20, seaY - 130, 20, 30);
+                    ctx.fillRect(cafeX + i * 20, seaY - 190, 20, 30);
                 }
 
-                // Open-air Tables (露天咖啡桌)
-                ctx.fillStyle = '#e76f51'; // Table color
-                ctx.fillRect(x - 60, seaY - 20, 40, 6); // table top
-                ctx.fillRect(x - 45, seaY - 14, 10, 14); // table leg
-
-                ctx.fillRect(x + 280, seaY - 20, 40, 6);
-                ctx.fillRect(x + 295, seaY - 14, 10, 14);
+                // Outdoor Umbrella
+                ctx.fillStyle = '#e76f51';
+                ctx.beginPath();
+                ctx.arc(cafeX - 60, seaY - 70, 50, Math.PI, 0); 
+                ctx.fill();
+                ctx.fillStyle = '#333';
+                ctx.fillRect(cafeX - 63, seaY - 70, 6, 70); // pole
+                
+                // Outdoor Table & Cup
+                ctx.fillStyle = '#d4a373';
+                ctx.fillRect(cafeX - 90, seaY - 20, 60, 6); // table top
+                ctx.fillRect(cafeX - 65, seaY - 14, 10, 14); // leg
+                ctx.fillStyle = '#fff';
+                ctx.fillRect(cafeX - 75, seaY - 30, 10, 10); // cup 1
+                ctx.fillRect(cafeX - 55, seaY - 30, 10, 10); // cup 2
 
                 // Chairs
                 ctx.fillStyle = '#264653';
-                ctx.fillRect(x - 80, seaY - 15, 10, 5); // left chair
-                ctx.fillRect(x - 15, seaY - 15, 10, 5); // right chair
-
-                ctx.fillRect(x + 260, seaY - 15, 10, 5);
-                ctx.fillRect(x + 325, seaY - 15, 10, 5);
+                ctx.fillRect(cafeX - 110, seaY - 15, 10, 5); 
+                ctx.fillRect(cafeX - 20, seaY - 15, 10, 5);
             }
-
+            
             // Pier Floor
             const groundY = height * 0.75;
             ctx.fillStyle = '#e7c697';
             ctx.fillRect(0, groundY, width, height - groundY);
-
-            // Pier Edge details (wooden planks)
+            
+            // Pier Edge
             ctx.fillStyle = '#d4a373';
             ctx.fillRect(0, groundY, width, 10);
-
-            // Pier Railing (Parallax fast)
+            
+            // Pier Railing 
             const railSpacing = 160;
             const startX2 = -(scrollPos % railSpacing);
             ctx.fillStyle = '#264653';
-
-            // Posts
+            
             for(let x = startX2; x < width + railSpacing; x += railSpacing) {
                 ctx.fillRect(x + 60, groundY - 70, 20, 70);
             }
-            // Top rail
-            ctx.fillRect(0, groundY - 70, width, 15);
-            // Middle rail
-            ctx.fillRect(0, groundY - 35, width, 8);
+            ctx.fillRect(0, groundY - 70, width, 15); // Top rail
+            ctx.fillRect(0, groundY - 35, width, 8);  // Middle rail
         }
 
-        function drawPigeons(time) {
-            pigeons.forEach(p => {
-                p.x -= (p.speed + (p.type === 'walk' ? 1.5 : 0)); // Move left with ground or fly
-                if (p.x < -100) {
-                    p.x = width + 200 + Math.random() * 500;
-                    if (p.type === 'fly') p.y = height * 0.1 + Math.random() * height * 0.3;
+        function drawEntities(time) {
+            let baseScroll = isSprintMode ? 15 : 1.5;
+
+            // Draw & Update Fries
+            fries.forEach((f, i) => {
+                if (f.y < height * 0.75) {
+                    f.vy += 1.2; // Gravity
+                    f.y += f.vy;
+                    if (f.y >= height * 0.75) {
+                        f.y = height * 0.75;
+                        if (f.isGiant) cameraShake = 40; // BOOM Screen shake
+                    }
+                } else {
+                    f.x -= baseScroll; 
                 }
 
-                ctx.save();
-                if (p.type === 'walk') {
-                    // Walking pigeon
-                    const bounce = Math.abs(Math.sin(time * 8 + p.offset)) * 4;
-                    ctx.translate(p.x, p.y - bounce);
-
-                    ctx.fillStyle = '#ffffff'; // body
-                    ctx.fillRect(-12, -12, 24, 16);
-                    ctx.fillStyle = '#e76f51'; // beak
-                    ctx.fillRect(-18, -8, 6, 6);
-                    ctx.fillStyle = '#2b2b2b'; // eye
-                    ctx.fillRect(-10, -8, 4, 4);
-                    // legs
-                    ctx.fillStyle = '#e76f51';
-                    ctx.fillRect(-4, 4, 4, 6);
-                    ctx.fillRect(4, 4, 4, 6);
+                if (f.life <= 0 || f.x < -300) {
+                    fries.splice(i, 1);
                 } else {
-                    // Flying pigeon
-                    ctx.translate(p.x, p.y + Math.sin(time * 3 + p.offset) * 20);
-                    ctx.fillStyle = '#ffffff';
-                    ctx.fillRect(-18, -6, 36, 12); // body
-                    // wings
-                    const flap = Math.sin(time * 12 + p.offset);
-                    if (flap > 0) {
-                        ctx.fillRect(-8, -20, 16, 14); // wing up
+                    ctx.fillStyle = '#e9c46a'; 
+                    if (f.isGiant) {
+                        ctx.fillRect(f.x - 30, f.y - 30, 80, 30); 
+                        ctx.fillRect(f.x - 10, f.y - 50, 60, 20); 
+                        // Ketchup splatter
+                        ctx.fillStyle = '#e63946';
+                        ctx.fillRect(f.x + 10, f.y - 35, 20, 10);
+                        ctx.fillRect(f.x - 15, f.y - 25, 15, 15);
                     } else {
-                        ctx.fillRect(-8, 6, 16, 14); // wing down
+                        ctx.fillRect(f.x, f.y, 12, 5);
+                        ctx.fillRect(f.x + 2, f.y - 4, 12, 5);
                     }
                 }
-                ctx.restore();
+            });
+
+            // Update Pigeons
+            pigeons.forEach(p => {
+                if (p.type === 'walk') {
+                    p.x -= baseScroll; 
+                    
+                    let targetFry = null;
+                    let minDist = 600;
+                    fries.forEach(f => {
+                        let dist = Math.abs(f.x - p.x);
+                        if (f.y >= height * 0.75 && dist < minDist && f.life > 0) {
+                            minDist = dist;
+                            targetFry = f;
+                        }
+                    });
+
+                    if (targetFry) {
+                        let arriveDist = targetFry.isGiant ? 50 : 15;
+                        if (p.x < targetFry.x - arriveDist) {
+                            p.x += 4.5; 
+                            p.facingRight = true;
+                            p.eating = false;
+                        } else if (p.x > targetFry.x + arriveDist) {
+                            p.x -= 4.5; 
+                            p.facingRight = false;
+                            p.eating = false;
+                        } else {
+                            targetFry.life -= (targetFry.isGiant ? 1 : 3);
+                            p.eating = true;
+                            p.x += baseScroll; 
+                        }
+                    } else {
+                        p.x -= p.speed; 
+                        p.facingRight = false;
+                        p.eating = false;
+                    }
+                    
+                    if (p.x < -100) {
+                        p.x = width + 200 + Math.random() * 500;
+                    }
+
+                    // Draw walking pigeon
+                    ctx.save();
+                    const bounce = p.eating ? 0 : Math.abs(Math.sin(time * 12 + p.offset)) * 4;
+                    ctx.translate(p.x, p.y - bounce);
+                    if (p.facingRight) ctx.scale(-1, 1);
+                    
+                    ctx.fillStyle = '#ffffff'; 
+                    ctx.fillRect(-12, -12, 24, 16); 
+                    
+                    const peck = p.eating ? Math.abs(Math.sin(time * 20)) * 8 : 0;
+                    
+                    ctx.fillStyle = '#e76f51'; // beak
+                    ctx.fillRect(-18, -8 + peck, 6, 6);
+                    ctx.fillStyle = '#2b2b2b'; // eye
+                    ctx.fillRect(-10, -8 + peck, 4, 4);
+                    
+                    ctx.fillStyle = '#e76f51'; // legs
+                    ctx.fillRect(-4, 4, 4, 6);
+                    ctx.fillRect(4, 4, 4, 6);
+                    ctx.restore();
+                    
+                } else {
+                    // Flying pigeon
+                    p.x -= p.speed;
+                    if (p.x < -100) {
+                        p.x = width + 200 + Math.random() * 500;
+                        p.y = height * 0.1 + Math.random() * height * 0.3;
+                    }
+                    
+                    ctx.save();
+                    ctx.translate(p.x, p.y + Math.sin(time * 3 + p.offset) * 20);
+                    ctx.fillStyle = '#ffffff';
+                    ctx.fillRect(-18, -6, 36, 12); 
+                    const flap = Math.sin(time * 12 + p.offset);
+                    if (flap > 0) ctx.fillRect(-8, -20, 16, 14); 
+                    else ctx.fillRect(-8, 6, 16, 14); 
+                    ctx.restore();
+                }
             });
         }
 
         function drawBoy(time) {
-            const x = width * 0.35;
-            const groundY = height * 0.75;
+            if (isJumping) {
+                boyYOffset -= boyVelocityY;
+                boyVelocityY += 0.8;
+                if (boyYOffset <= 0) {
+                    boyYOffset = 0;
+                    isJumping = false;
+                }
+            }
 
-            const speed = 5;
+            const x = width * 0.35;
+            const groundY = height * 0.75 - boyYOffset;
+            
+            const speed = isJumping ? 0 : (isSprintMode ? 20 : 5);
             const walkCycle = time * speed;
             const leg1 = Math.sin(walkCycle);
             const leg2 = Math.sin(walkCycle + Math.PI);
+            
+            let armRot1 = leg1 * 0.5;
+            let armRot2 = leg2 * 0.5;
+            
+            if (isSprintMode && !isJumping) {
+                // Helicopter arms when sprinting!
+                armRot1 = Math.sin(time * 30) * Math.PI;
+                armRot2 = Math.sin(time * 30 + Math.PI) * Math.PI;
+            } else if (isJumping) {
+                armRot1 = -2.5;
+                armRot2 = -2.5;
+            }
 
             ctx.save();
             ctx.translate(x, groundY);
-
-            // Leisurely bounce
-            ctx.translate(0, -Math.abs(Math.sin(walkCycle * 2)) * 6);
+            
+            if (!isJumping) {
+                ctx.translate(0, -Math.abs(Math.sin(walkCycle * 2)) * (isSprintMode ? 10 : 6));
+            }
+            
+            // Draw Pigeon Hat
+            if (hasPigeonHat) {
+                ctx.save();
+                ctx.translate(0, -114); 
+                ctx.fillStyle = '#ffffff';
+                ctx.fillRect(-12, -12, 24, 12);
+                ctx.fillStyle = '#e76f51'; 
+                ctx.fillRect(-16, -6, 4, 4);
+                ctx.fillStyle = '#2b2b2b'; 
+                ctx.fillRect(-8, -6, 4, 4);
+                ctx.restore();
+            }
 
             const skin = '#ffcdb2';
             const shirt = '#e9c46a';
             const pants = '#264653';
-
+            
             // Back Arm
             ctx.save();
             ctx.translate(2, -65);
-            ctx.rotate(leg2 * 0.5);
+            ctx.rotate(armRot2); 
             ctx.fillStyle = skin;
             ctx.fillRect(-6, 0, 12, 35);
             ctx.restore();
-
+            
             // Back Leg
             ctx.save();
             ctx.translate(0, -35);
-            ctx.rotate(leg2 * 0.6);
+            ctx.rotate(isJumping ? -0.2 : leg2 * 0.6);
             ctx.fillStyle = pants;
             ctx.fillRect(-8, 0, 16, 38);
             ctx.restore();
-
+            
             // Body
             ctx.fillStyle = shirt;
             ctx.fillRect(-16, -75, 32, 45);
-
+            
             // Head
             ctx.save();
-            // Slight head bob
-            ctx.translate(0, Math.sin(walkCycle * 2) * 2);
+            if(!isJumping) ctx.translate(0, Math.sin(walkCycle * 2) * 2);
             ctx.fillStyle = skin;
             ctx.fillRect(-14, -108, 28, 30);
             // Hair
             ctx.fillStyle = '#2b2b2b';
-            ctx.fillRect(-16, -114, 32, 14); // top hair
-            ctx.fillRect(8, -108, 8, 16); // bangs
-            ctx.fillRect(-16, -108, 8, 18); // back hair
+            ctx.fillRect(-16, -114, 32, 14); 
+            ctx.fillRect(8, -108, 8, 16); 
+            ctx.fillRect(-16, -108, 8, 18); 
             // Eye
             ctx.fillStyle = '#2b2b2b';
             ctx.fillRect(6, -95, 4, 6);
             ctx.restore();
-
+            
             // Front Leg
             ctx.save();
             ctx.translate(0, -35);
-            ctx.rotate(leg1 * 0.6);
+            ctx.rotate(isJumping ? 0.4 : leg1 * 0.6);
             ctx.fillStyle = pants;
             ctx.fillRect(-8, 0, 16, 38);
             ctx.restore();
-
+            
             // Front Arm
             ctx.save();
             ctx.translate(-2, -65);
-            ctx.rotate(leg1 * 0.5);
+            ctx.rotate(armRot1); 
             ctx.fillStyle = skin;
             ctx.fillRect(-6, 0, 12, 35);
-            // Sleeve
             ctx.fillStyle = shirt;
             ctx.fillRect(-7, 0, 14, 12);
             ctx.restore();
-
+            
             ctx.restore();
         }
 
         function animate(timestamp) {
             requestAnimationFrame(animate);
             const time = timestamp / 1000;
-
+            
+            ctx.save();
             ctx.clearRect(0, 0, width, height);
+            
+            // Screen Shake Effect
+            if (cameraShake > 0) {
+                ctx.translate(Math.random() * cameraShake - cameraShake/2, Math.random() * cameraShake - cameraShake/2);
+                cameraShake *= 0.9;
+                if (cameraShake < 0.5) cameraShake = 0;
+            }
 
             drawBackground(time);
-            drawPigeons(time);
+            drawEntities(time);
             drawBoy(time);
+            
+            ctx.restore();
         }
 
         requestAnimationFrame(animate);
