@@ -98,6 +98,7 @@
         <button class="menu-item" id="btn-giant-fry">🍟 物理超度 (天降巨型薯条)</button>
         <button class="menu-item" id="btn-sprint">🚀 破防狂奔 (光速下班模式)</button>
         <button class="menu-item" id="btn-hat">🎩 融入环境 (戴上原生态帽子)</button>
+        <button class="menu-item" id="btn-slash" style="background: #e63946;">⚔️ 拔剑吧！(全屏秒杀变炸鸡)</button>
     </div>
 
     <script>
@@ -118,6 +119,7 @@
         let cameraShake = 0;
         let isSprintMode = false;
         let hasPigeonHat = false;
+        let slashTimer = 0;
 
         function resize() {
             width = window.innerWidth;
@@ -186,6 +188,29 @@
             document.getElementById('btn-hat').innerText = hasPigeonHat ? '🎩 拿走这只蠢鸟' : '🎩 融入环境 (戴上原生态帽子)';
         });
 
+        document.getElementById('btn-slash').addEventListener('mousedown', (e) => {
+            e.stopPropagation();
+            slashTimer = 20;
+            cameraShake = 50;
+            
+            pigeons.forEach(p => {
+                // 变炸鸡腿
+                fries.push({
+                    x: p.x, y: p.y, life: 800, isChickenLeg: true, 
+                    vy: -10 + Math.random() * -5, vx: (Math.random() - 0.5) * 15
+                });
+                // 飘羽毛
+                for(let i=0; i<4; i++){
+                    fries.push({
+                        x: p.x, y: p.y, life: 400, isFeather: true,
+                        vy: -4 + Math.random() * -4, vx: (Math.random() - 0.5) * 8
+                    });
+                }
+            });
+            pigeons = []; // 清空鸽子
+            if (hasPigeonHat) hasPigeonHat = false; // 帽子也杀掉
+            document.getElementById('btn-hat').innerText = '🎩 融入环境 (戴上原生态帽子)';
+        });
 
         // 交互逻辑：点击起跳 或 扔薯条
         window.addEventListener('mousedown', (e) => {
@@ -313,31 +338,55 @@
         function drawEntities(time) {
             let baseScroll = isSprintMode ? 15 : 1.5;
 
-            // Draw & Update Fries
+            // Draw & Update Fries (and Chicken Legs/Feathers)
             fries.forEach((f, i) => {
                 if (f.y < height * 0.75) {
-                    f.vy += 1.2; // Gravity
+                    f.vy += (f.isFeather ? 0.2 : 1.2); // Gravity
                     f.y += f.vy;
+                    
+                    if (f.vx) {
+                        f.x += f.vx;
+                        f.vx *= (f.isFeather ? 0.92 : 0.98); // Air friction
+                    }
+
                     if (f.y >= height * 0.75) {
                         f.y = height * 0.75;
-                        if (f.isGiant) cameraShake = 40; // BOOM Screen shake
+                        if (f.isGiant && !f.hitGround) {
+                            cameraShake = 40; 
+                            f.hitGround = true;
+                        }
+                        if (f.isChickenLeg) {
+                            if (Math.abs(f.vy) > 3) f.vy *= -0.5; // Bounce
+                            else { f.vy = 0; f.vx = 0; }
+                        } else if (f.isFeather) {
+                            f.vy = 0; f.vx = 0;
+                        }
                     }
                 } else {
                     f.x -= baseScroll; 
+                    f.life -= 1; // Decay when on ground
                 }
 
-                if (f.life <= 0 || f.x < -300) {
+                if (f.life <= 0 || f.x < -300 || f.x > width + 300) {
                     fries.splice(i, 1);
                 } else {
-                    ctx.fillStyle = '#e9c46a'; 
                     if (f.isGiant) {
+                        ctx.fillStyle = '#e9c46a'; 
                         ctx.fillRect(f.x - 30, f.y - 30, 80, 30); 
                         ctx.fillRect(f.x - 10, f.y - 50, 60, 20); 
-                        // Ketchup splatter
                         ctx.fillStyle = '#e63946';
                         ctx.fillRect(f.x + 10, f.y - 35, 20, 10);
                         ctx.fillRect(f.x - 15, f.y - 25, 15, 15);
+                    } else if (f.isChickenLeg) {
+                        ctx.fillStyle = '#d4a373'; // Meat
+                        ctx.fillRect(f.x - 8, f.y - 12, 20, 12);
+                        ctx.fillStyle = '#fff'; // Bone
+                        ctx.fillRect(f.x - 14, f.y - 8, 8, 4);
+                    } else if (f.isFeather) {
+                        ctx.fillStyle = '#fff';
+                        ctx.fillRect(f.x, f.y - 6, 6, 6);
                     } else {
+                        ctx.fillStyle = '#e9c46a'; 
                         ctx.fillRect(f.x, f.y, 12, 5);
                         ctx.fillRect(f.x + 2, f.y - 4, 12, 5);
                     }
@@ -553,6 +602,27 @@
             drawEntities(time);
             drawBoy(time);
             
+            // Slash effect overlay
+            if (slashTimer > 0) {
+                ctx.save();
+                ctx.beginPath();
+                ctx.moveTo(0, height * 0.2);
+                ctx.lineTo(width, height * 0.8);
+                ctx.lineWidth = slashTimer * 8;
+                ctx.strokeStyle = '#fff';
+                ctx.stroke();
+                
+                ctx.beginPath();
+                ctx.moveTo(0, height * 0.8);
+                ctx.lineTo(width, height * 0.2);
+                ctx.lineWidth = slashTimer * 4;
+                ctx.strokeStyle = '#e63946';
+                ctx.stroke();
+                ctx.restore();
+                
+                slashTimer--;
+            }
+
             ctx.restore();
         }
 
