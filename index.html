@@ -9,49 +9,7 @@
         body { margin: 0; overflow: hidden; background-color: #ffb482; font-family: 'Noto Sans SC', sans-serif; cursor: crosshair; }
         canvas { display: block; width: 100vw; height: 100vh; }
         
-        #ui-container { position: absolute; top: 0; left: 0; width: 100%; height: 100%; pointer-events: none; display: flex; flex-direction: column; justify-content: center; align-items: flex-start; padding: 6vw; box-sizing: border-box; }
-        
-        .card {
-            background: rgba(255, 255, 255, 0.9);
-            border: 4px solid #264653;
-            border-radius: 12px;
-            padding: 30px;
-            max-width: 420px;
-            pointer-events: auto;
-            box-shadow: 8px 8px 0px #2a9d8f;
-            transition: transform 0.3s ease, box-shadow 0.3s ease;
-            position: relative;
-        }
-        .card:hover { transform: translate(-4px, -4px); box-shadow: 12px 12px 0px #2a9d8f; }
-        
-        .card.fly-away {
-            transition: transform 1.5s cubic-bezier(0.55, 0.085, 0.68, 0.53), opacity 1.5s !important;
-            transform: translate(120vw, -50vh) rotate(850deg) scale(0.2) !important;
-            opacity: 0 !important;
-            pointer-events: none !important;
-        }
-        .card.fly-back {
-            transition: transform 1.2s cubic-bezier(0.175, 0.885, 0.32, 1.275), opacity 1.2s !important;
-            transform: translate(0, 0) rotate(0deg) scale(1) !important;
-            opacity: 1 !important;
-            pointer-events: auto !important;
-        }
 
-        #btn-hide-card {
-            position: absolute; top: 15px; right: 15px; background: #fff; border: 2px dashed #264653; color: #264653; font-family: 'Noto Sans SC', sans-serif; font-size: 12px; font-weight: bold; cursor: pointer; padding: 4px 8px; border-radius: 6px; transition: all 0.2s;
-        }
-        #btn-hide-card:hover { transform: translate(-2px, -2px) rotate(-5deg); background: #e76f51; border-color: #e76f51; color: #fff; box-shadow: 3px 3px 0 #264653; }
-        #btn-hide-card:active { transform: translate(2px, 2px) rotate(5deg); box-shadow: 0px 0px 0 #264653; }
-        
-        h1 { font-family: 'DotGothic16', sans-serif; font-size: 32px; margin: 0 0 15px 0; color: #e76f51; }
-        h2 { font-size: 16px; color: #264653; margin-top: 0; margin-bottom: 20px; font-weight: bold; }
-        ul { padding-left: 20px; color: #264653; font-size: 15px; line-height: 1.8; margin-bottom: 25px; list-style-type: square; }
-        .quote { font-family: 'DotGothic16', sans-serif; color: #2a9d8f; font-weight: bold; margin-bottom: 20px; font-size: 18px; background: #fff; padding: 10px; border: 2px dashed #2a9d8f; display: inline-block; }
-        
-        .links { display: flex; gap: 15px; flex-wrap: wrap; }
-        .links a { text-decoration: none; color: #fff; background: #264653; padding: 10px 20px; font-size: 16px; font-weight: bold; border-radius: 6px; transition: all 0.2s; box-shadow: 4px 4px 0px #1d3557; }
-        .links a:hover { background: #e76f51; transform: translate(-2px, -2px); box-shadow: 6px 6px 0px #1d3557; }
-        .links a:active { transform: translate(2px, 2px); box-shadow: 2px 2px 0px #1d3557; }
         
         #hint {
             position: absolute;
@@ -92,24 +50,7 @@
 <body>
     <canvas id="scene"></canvas>
     
-    <div id="ui-container">
-        <div class="card">
-            <button id="btn-hide-card" title="看腻了？让风带走它">💨 随风而去</button>
-            <h1>> 李仁康 _</h1>
-            <h2>跨境全栈开发者 / 前端基础架构师</h2>
-            <div class="quote">“代码跑通了，去码头整点薯条。”</div>
-            <ul>
-                <li>专注 Shopify 类独立站开发与跨境电商前端基础设施</li>
-                <li>精通广告像素追踪 (Pixel) 与复杂数据链路治理</li>
-                <li>深耕监控体系性能调优、白屏治理及自动化 CI/CD</li>
-                <li>探索 WebGL 视觉体验，主页阵地：lrk.666.eu.org</li>
-            </ul>
-            <div class="links">
-                <a href="#github" target="_blank">GitHub</a>
-                <a href="#projects" target="_blank">项目模板库</a>
-            </div>
-        </div>
-    </div>
+
 
     <div id="hint">🍟 点击空地投喂薯条 / 点击少年起跳</div>
 
@@ -120,7 +61,6 @@
         <button class="menu-item" id="btn-sprint">🚀 破防狂奔 (光速下班模式)</button>
         <button class="menu-item" id="btn-hat">🎩 融入环境 (戴上原生态帽子)</button>
         <button class="menu-item" id="btn-slash" style="background: #e63946;">⚔️ 拔剑吧！(全屏秒杀变炸鸡)</button>
-        <button class="menu-item" id="btn-show-card" style="display: none; background: #2a9d8f;">🎣 顺着网线捞回简历</button>
     </div>
 
     <script>
@@ -166,33 +106,6 @@
         resize();
 
         // UI 事件绑定
-        document.getElementById('btn-hide-card').addEventListener('mousedown', (e) => {
-            e.stopPropagation();
-            const card = document.querySelector('.card');
-            card.classList.remove('fly-back');
-            card.classList.add('fly-away');
-            document.getElementById('btn-show-card').style.display = 'block';
-            
-            // 阵风特效
-            cameraShake = 15;
-            for(let i=0; i<20; i++) {
-                fries.push({
-                    x: -200 + Math.random() * 200,
-                    y: height * 0.1 + Math.random() * height * 0.6,
-                    life: 800, isDebris: true,
-                    vx: 15 + Math.random() * 15, vy: (Math.random() - 0.5) * 5
-                });
-            }
-        });
-
-        document.getElementById('btn-show-card').addEventListener('mousedown', (e) => {
-            e.stopPropagation();
-            const card = document.querySelector('.card');
-            card.classList.remove('fly-away');
-            card.classList.add('fly-back');
-            document.getElementById('btn-show-card').style.display = 'none';
-        });
-
         document.getElementById('menu-btn').addEventListener('mousedown', (e) => {
             e.stopPropagation();
             const menu = document.getElementById('secret-menu');
